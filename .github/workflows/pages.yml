@@ -27,6 +27,7 @@ jobs:
           mkdir -p dist
           curl -L "https://qfgwvqbasqkwyqagspvc.supabase.co/storage/v1/object/public/momentos/site-assets/v20260707/mariepe-pages-source.zip" -o site.zip
           unzip -q site.zip -d dist
+          test -f dist/index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
