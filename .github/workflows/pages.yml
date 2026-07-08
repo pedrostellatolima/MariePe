@@ -33,14 +33,17 @@ jobs:
 
           dist = Path("dist")
           title_tag = "<title>Casamento Mari e Pe | 2027</title>"
-          favicon_links = """  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <link rel="shortcut icon" href="favicon.svg" />"""
-          favicon_svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#f5f1e8"/>
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#a08858" stroke-width="3"/>
-  <text x="32" y="39" text-anchor="middle" font-family="Georgia, serif" font-size="23" font-style="italic" fill="#2a3320">MP</text>
-</svg>
-"""
+          favicon_links = "\n".join([
+              "  <link rel=\"icon\" type=\"image/svg+xml\" href=\"favicon.svg\" />",
+              "  <link rel=\"shortcut icon\" href=\"favicon.svg\" />",
+          ])
+          favicon_svg = "\n".join([
+              "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\">",
+              "  <rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#f5f1e8\"/>",
+              "  <circle cx=\"32\" cy=\"32\" r=\"23\" fill=\"none\" stroke=\"#a08858\" stroke-width=\"3\"/>",
+              "  <text x=\"32\" y=\"39\" text-anchor=\"middle\" font-family=\"Georgia, serif\" font-size=\"23\" font-style=\"italic\" fill=\"#2a3320\">MP</text>",
+              "</svg>",
+          ]) + "\n"
 
           (dist / "favicon.svg").write_text(favicon_svg, encoding="utf-8")
 
@@ -55,114 +58,60 @@ jobs:
           index = dist / "index.html"
           html = index.read_text(encoding="utf-8")
 
-          mobile_css = """
-<style id="mp-mobile-menu-fix">
-  .nav-links { margin: 0; padding: 0; }
-  .nav-toggle {
-    border: 0;
-    background: transparent;
-    padding: .6rem;
-    margin: -.6rem;
-  }
-  .nav-toggle span {
-    width: 24px;
-    background: rgba(255,255,255,.86);
-    transition: transform .25s, opacity .25s, background .25s;
-  }
-  nav.scrolled .nav-toggle span,
-  nav.nav-open .nav-toggle span { background: var(--ink); }
+          mobile_css = "\n".join([
+              "<style id=\"mp-mobile-menu-fix\">",
+              "  .nav-links { margin: 0; padding: 0; }",
+              "  .nav-toggle { border: 0; background: transparent; padding: .6rem; margin: -.6rem; }",
+              "  .nav-toggle span { width: 24px; background: rgba(255,255,255,.86); transition: transform .25s, opacity .25s, background .25s; }",
+              "  nav.scrolled .nav-toggle span, nav.nav-open .nav-toggle span { background: var(--ink); }",
+              "  @media (max-width: 700px) {",
+              "    body.nav-open-body { overflow: hidden; }",
+              "    nav { z-index: 300; }",
+              "    nav.nav-open { background: rgba(245,241,232,.98); box-shadow: 0 1px 20px rgba(42,51,32,.10); }",
+              "    nav.nav-open .nav-logo img { filter: none; opacity: 1; }",
+              "    .nav-logo, .nav-toggle { position: relative; z-index: 2; }",
+              "    .nav-links { position: fixed; inset: 0; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: .75rem; overflow-y: auto; padding: 6.4rem 1.4rem 2rem; background: rgba(245,241,232,.98); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-10px); transition: opacity .25s, transform .25s, visibility .25s; }",
+              "    .nav-links.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }",
+              "    .nav-links li { width: min(100%, 330px); }",
+              "    .nav-links a { display: block; width: 100%; padding: .78rem .9rem; border: 1px solid rgba(160,136,88,.20); background: rgba(255,255,255,.46); color: var(--ink); text-align: center; font-size: .78rem; }",
+              "    .nav-links a:hover { color: var(--ink); }",
+              "    nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6px) rotate(45deg); }",
+              "    nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }",
+              "    nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }",
+              "  }",
+              "</style>",
+          ]) + "\n"
 
-  @media (max-width: 700px) {
-    body.nav-open-body { overflow: hidden; }
-    nav { z-index: 300; }
-    nav.nav-open {
-      background: rgba(245,241,232,.98);
-      box-shadow: 0 1px 20px rgba(42,51,32,.10);
-    }
-    nav.nav-open .nav-logo img { filter: none; opacity: 1; }
-    .nav-logo,
-    .nav-toggle { position: relative; z-index: 2; }
-    .nav-links {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: .75rem;
-      overflow-y: auto;
-      padding: 6.4rem 1.4rem 2rem;
-      background: rgba(245,241,232,.98);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transform: translateY(-10px);
-      transition: opacity .25s, transform .25s, visibility .25s;
-    }
-    .nav-links.open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-      transform: translateY(0);
-    }
-    .nav-links li { width: min(100%, 330px); }
-    .nav-links a {
-      display: block;
-      width: 100%;
-      padding: .78rem .9rem;
-      border: 1px solid rgba(160,136,88,.20);
-      background: rgba(255,255,255,.46);
-      color: var(--ink);
-      text-align: center;
-      font-size: .78rem;
-    }
-    .nav-links a:hover { color: var(--ink); }
-    nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-    nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
-    nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
-  }
-</style>
-"""
-
-          mobile_js = """
-<script id="mp-mobile-menu-fix-js">
-  (function () {
-    const nav = document.getElementById('nav');
-    const links = document.getElementById('navLinks');
-    const toggle = document.querySelector('.nav-toggle');
-    if (!nav || !links || !toggle) return;
-
-    toggle.setAttribute('type', 'button');
-    toggle.setAttribute('aria-controls', 'navLinks');
-    toggle.setAttribute('aria-expanded', 'false');
-    toggle.setAttribute('aria-label', 'Abrir menu');
-
-    window.toggleNav = function () {
-      const aberto = links.classList.toggle('open');
-      nav.classList.toggle('nav-open', aberto);
-      document.body.classList.toggle('nav-open-body', aberto);
-      toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');
-      toggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
-    };
-
-    window.closeNav = function () {
-      links.classList.remove('open');
-      nav.classList.remove('nav-open');
-      document.body.classList.remove('nav-open-body');
-      toggle.setAttribute('aria-expanded', 'false');
-      toggle.setAttribute('aria-label', 'Abrir menu');
-    };
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 700) window.closeNav();
-    });
-    window.addEventListener('keydown', event => {
-      if (event.key === 'Escape') window.closeNav();
-    });
-  })();
-</script>
-"""
+          mobile_js = "\n".join([
+              "<script id=\"mp-mobile-menu-fix-js\">",
+              "  (function () {",
+              "    const nav = document.getElementById('nav');",
+              "    const links = document.getElementById('navLinks');",
+              "    const toggle = document.querySelector('.nav-toggle');",
+              "    if (!nav || !links || !toggle) return;",
+              "    toggle.setAttribute('type', 'button');",
+              "    toggle.setAttribute('aria-controls', 'navLinks');",
+              "    toggle.setAttribute('aria-expanded', 'false');",
+              "    toggle.setAttribute('aria-label', 'Abrir menu');",
+              "    window.toggleNav = function () {",
+              "      const aberto = links.classList.toggle('open');",
+              "      nav.classList.toggle('nav-open', aberto);",
+              "      document.body.classList.toggle('nav-open-body', aberto);",
+              "      toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');",
+              "      toggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');",
+              "    };",
+              "    window.closeNav = function () {",
+              "      links.classList.remove('open');",
+              "      nav.classList.remove('nav-open');",
+              "      document.body.classList.remove('nav-open-body');",
+              "      toggle.setAttribute('aria-expanded', 'false');",
+              "      toggle.setAttribute('aria-label', 'Abrir menu');",
+              "    };",
+              "    window.addEventListener('resize', () => { if (window.innerWidth > 700) window.closeNav(); });",
+              "    window.addEventListener('keydown', event => { if (event.key === 'Escape') window.closeNav(); });",
+              "  })();",
+              "</script>",
+          ]) + "\n"
 
           if "mp-mobile-menu-fix" not in html:
               html = html.replace("</head>", mobile_css + "</head>", 1)
