@@ -29,196 +29,153 @@ jobs:
           unzip -q site.zip -d dist
           python3 <<'PY'
           from pathlib import Path
+          import re
 
-          def block(lines):
-              return "\n".join(lines) + "\n"
+          dist = Path("dist")
+          title_tag = "<title>Casamento Mari e Pe | 2027</title>"
+          favicon_links = """  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="shortcut icon" href="favicon.svg" />"""
+          favicon_svg = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="14" fill="#f5f1e8"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#a08858" stroke-width="3"/>
+  <text x="32" y="39" text-anchor="middle" font-family="Georgia, serif" font-size="23" font-style="italic" fill="#2a3320">MP</text>
+</svg>
+"""
 
-          path = Path("dist/index.html")
-          html = path.read_text(encoding="utf-8")
+          (dist / "favicon.svg").write_text(favicon_svg, encoding="utf-8")
 
-          replacements = [
-              (
-                  block([
-                      "    .nav-links {",
-                      "      display: flex;",
-                      "      gap: 2.2rem;",
-                      "      list-style: none;",
-                      "    }",
-                  ]),
-                  block([
-                      "    .nav-links {",
-                      "      display: flex;",
-                      "      gap: 2.2rem;",
-                      "      list-style: none;",
-                      "      margin: 0;",
-                      "      padding: 0;",
-                      "    }",
-                  ]),
-                  "nav links reset",
-              ),
-              (
-                  block([
-                      "    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; }",
-                      "    .nav-toggle span { display: block; width: 22px; height: 1px; background: var(--ink); transition: .3s; }",
-                      "",
-                      "    @media (max-width: 700px) {",
-                      "      .nav-links { display: none; position: fixed; inset: 0; background: var(--offwhite); flex-direction: column; align-items: center; justify-content: center; gap: 2.5rem; }",
-                      "      .nav-links.open { display: flex; }",
-                      "      .nav-links a { font-size: .85rem; }",
-                      "      .nav-toggle { display: flex; }",
-                      "      nav { padding: 1.2rem 1.6rem; }",
-                      "      nav.scrolled { padding: 1rem 1.6rem; }",
-                      "    }",
-                  ]),
-                  block([
-                      "    .nav-toggle {",
-                      "      display: none;",
-                      "      flex-direction: column;",
-                      "      gap: 5px;",
-                      "      border: 0;",
-                      "      background: transparent;",
-                      "      padding: .6rem;",
-                      "      margin: -.6rem;",
-                      "      cursor: pointer;",
-                      "    }",
-                      "    .nav-toggle span {",
-                      "      display: block;",
-                      "      width: 24px;",
-                      "      height: 1px;",
-                      "      background: rgba(255,255,255,.86);",
-                      "      transition: transform .25s, opacity .25s, background .25s;",
-                      "    }",
-                      "    nav.scrolled .nav-toggle span,",
-                      "    nav.nav-open .nav-toggle span { background: var(--ink); }",
-                      "",
-                      "    @media (max-width: 700px) {",
-                      "      body.nav-open-body { overflow: hidden; }",
-                      "      nav {",
-                      "        padding: 1.2rem 1.6rem;",
-                      "        z-index: 300;",
-                      "      }",
-                      "      nav.scrolled { padding: 1rem 1.6rem; }",
-                      "      nav.nav-open {",
-                      "        background: rgba(245,241,232,.98);",
-                      "        box-shadow: 0 1px 20px rgba(42,51,32,.10);",
-                      "      }",
-                      "      nav.nav-open .nav-logo img {",
-                      "        filter: none;",
-                      "        opacity: 1;",
-                      "      }",
-                      "      .nav-logo,",
-                      "      .nav-toggle {",
-                      "        position: relative;",
-                      "        z-index: 2;",
-                      "      }",
-                      "      .nav-links {",
-                      "        position: fixed;",
-                      "        inset: 0;",
-                      "        z-index: 1;",
-                      "        display: flex;",
-                      "        flex-direction: column;",
-                      "        align-items: center;",
-                      "        justify-content: flex-start;",
-                      "        gap: .75rem;",
-                      "        overflow-y: auto;",
-                      "        padding: 6.4rem 1.4rem 2rem;",
-                      "        background: rgba(245,241,232,.98);",
-                      "        opacity: 0;",
-                      "        visibility: hidden;",
-                      "        pointer-events: none;",
-                      "        transform: translateY(-10px);",
-                      "        transition: opacity .25s, transform .25s, visibility .25s;",
-                      "      }",
-                      "      .nav-links.open {",
-                      "        opacity: 1;",
-                      "        visibility: visible;",
-                      "        pointer-events: auto;",
-                      "        transform: translateY(0);",
-                      "      }",
-                      "      .nav-links li {",
-                      "        width: min(100%, 330px);",
-                      "      }",
-                      "      .nav-links a {",
-                      "        display: block;",
-                      "        width: 100%;",
-                      "        padding: .78rem .9rem;",
-                      "        border: 1px solid rgba(160,136,88,.20);",
-                      "        background: rgba(255,255,255,.46);",
-                      "        color: var(--ink);",
-                      "        text-align: center;",
-                      "        font-size: .78rem;",
-                      "      }",
-                      "      .nav-links a:hover { color: var(--ink); }",
-                      "      .nav-toggle { display: flex; }",
-                      "      nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6px) rotate(45deg); }",
-                      "      nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }",
-                      "      nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }",
-                      "    }",
-                  ]),
-                  "mobile menu css",
-              ),
-              (
-                  "  <button class=\"nav-toggle\" aria-label=\"Menu\" onclick=\"toggleNav()\">\n",
-                  "  <button class=\"nav-toggle\" type=\"button\" aria-label=\"Abrir menu\" aria-controls=\"navLinks\" aria-expanded=\"false\" onclick=\"toggleNav()\">\n",
-                  "menu button attributes",
-              ),
-              (
-                  "    <li><a href=\"momentos.html\" style=\"color:var(--gold-lt)\">✨ Momentos</a></li>\n",
-                  "    <li><a href=\"momentos.html\" style=\"color:var(--gold-lt)\" onclick=\"closeNav()\">✨ Momentos</a></li>\n",
-                  "momentos link closes menu",
-              ),
-              (
-                  block([
-                      "  function toggleNav() {",
-                      "    document.getElementById('navLinks').classList.toggle('open');",
-                      "  }",
-                      "  function closeNav() {",
-                      "    document.getElementById('navLinks').classList.remove('open');",
-                      "  }",
-                  ]),
-                  block([
-                      "  function toggleNav() {",
-                      "    const links = document.getElementById('navLinks');",
-                      "    const toggle = document.querySelector('.nav-toggle');",
-                      "    const aberto = links.classList.toggle('open');",
-                      "    nav.classList.toggle('nav-open', aberto);",
-                      "    document.body.classList.toggle('nav-open-body', aberto);",
-                      "    if (toggle) {",
-                      "      toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');",
-                      "      toggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');",
-                      "    }",
-                      "  }",
-                      "  function closeNav() {",
-                      "    const links = document.getElementById('navLinks');",
-                      "    const toggle = document.querySelector('.nav-toggle');",
-                      "    links.classList.remove('open');",
-                      "    nav.classList.remove('nav-open');",
-                      "    document.body.classList.remove('nav-open-body');",
-                      "    if (toggle) {",
-                      "      toggle.setAttribute('aria-expanded', 'false');",
-                      "      toggle.setAttribute('aria-label', 'Abrir menu');",
-                      "    }",
-                      "  }",
-                      "  window.addEventListener('resize', () => {",
-                      "    if (window.innerWidth > 700) closeNav();",
-                      "  });",
-                      "  window.addEventListener('keydown', event => {",
-                      "    if (event.key === 'Escape') closeNav();",
-                      "  });",
-                  ]),
-                  "mobile menu script",
-              ),
-          ]
+          for page_name in ["index.html", "momentos.html", "admin.html"]:
+              page = dist / page_name
+              html = page.read_text(encoding="utf-8")
+              html = re.sub(r"<title>.*?</title>", title_tag, html, count=1, flags=re.S)
+              if "favicon.svg" not in html:
+                  html = html.replace(title_tag, title_tag + "\n" + favicon_links, 1)
+              page.write_text(html, encoding="utf-8")
 
-          for old, new, label in replacements:
-              if old in html:
-                  html = html.replace(old, new, 1)
-              elif new not in html:
-                  raise SystemExit(f"Missing expected block: {label}")
+          index = dist / "index.html"
+          html = index.read_text(encoding="utf-8")
 
-          path.write_text(html, encoding="utf-8")
+          mobile_css = """
+<style id="mp-mobile-menu-fix">
+  .nav-links { margin: 0; padding: 0; }
+  .nav-toggle {
+    border: 0;
+    background: transparent;
+    padding: .6rem;
+    margin: -.6rem;
+  }
+  .nav-toggle span {
+    width: 24px;
+    background: rgba(255,255,255,.86);
+    transition: transform .25s, opacity .25s, background .25s;
+  }
+  nav.scrolled .nav-toggle span,
+  nav.nav-open .nav-toggle span { background: var(--ink); }
+
+  @media (max-width: 700px) {
+    body.nav-open-body { overflow: hidden; }
+    nav { z-index: 300; }
+    nav.nav-open {
+      background: rgba(245,241,232,.98);
+      box-shadow: 0 1px 20px rgba(42,51,32,.10);
+    }
+    nav.nav-open .nav-logo img { filter: none; opacity: 1; }
+    .nav-logo,
+    .nav-toggle { position: relative; z-index: 2; }
+    .nav-links {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: .75rem;
+      overflow-y: auto;
+      padding: 6.4rem 1.4rem 2rem;
+      background: rgba(245,241,232,.98);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-10px);
+      transition: opacity .25s, transform .25s, visibility .25s;
+    }
+    .nav-links.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .nav-links li { width: min(100%, 330px); }
+    .nav-links a {
+      display: block;
+      width: 100%;
+      padding: .78rem .9rem;
+      border: 1px solid rgba(160,136,88,.20);
+      background: rgba(255,255,255,.46);
+      color: var(--ink);
+      text-align: center;
+      font-size: .78rem;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    nav.nav-open .nav-toggle span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    nav.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+    nav.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+  }
+</style>
+"""
+
+          mobile_js = """
+<script id="mp-mobile-menu-fix-js">
+  (function () {
+    const nav = document.getElementById('nav');
+    const links = document.getElementById('navLinks');
+    const toggle = document.querySelector('.nav-toggle');
+    if (!nav || !links || !toggle) return;
+
+    toggle.setAttribute('type', 'button');
+    toggle.setAttribute('aria-controls', 'navLinks');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Abrir menu');
+
+    window.toggleNav = function () {
+      const aberto = links.classList.toggle('open');
+      nav.classList.toggle('nav-open', aberto);
+      document.body.classList.toggle('nav-open-body', aberto);
+      toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+      toggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+    };
+
+    window.closeNav = function () {
+      links.classList.remove('open');
+      nav.classList.remove('nav-open');
+      document.body.classList.remove('nav-open-body');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'Abrir menu');
+    };
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 700) window.closeNav();
+    });
+    window.addEventListener('keydown', event => {
+      if (event.key === 'Escape') window.closeNav();
+    });
+  })();
+</script>
+"""
+
+          if "mp-mobile-menu-fix" not in html:
+              html = html.replace("</head>", mobile_css + "</head>", 1)
+          if "mp-mobile-menu-fix-js" not in html:
+              html = html.replace("</body>", mobile_js + "</body>", 1)
+          html = html.replace(
+              '<a href="momentos.html" style="color:var(--gold-lt)">✨ Momentos</a>',
+              '<a href="momentos.html" style="color:var(--gold-lt)" onclick="closeNav()">✨ Momentos</a>',
+          )
+          index.write_text(html, encoding="utf-8")
           PY
           test -f dist/index.html
+          test -f dist/favicon.svg
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
