@@ -55,6 +55,52 @@ jobs:
                   html = html.replace(title_tag, title_tag + "\n" + favicon_links, 1)
               page.write_text(html, encoding="utf-8")
 
+          momentos = dist / "momentos.html"
+          html = momentos.read_text(encoding="utf-8")
+          html = html.replace("10 perguntas rápidas. No final você descobre se é quase da família!", "12 perguntas rápidas. No final você descobre se é quase da família!")
+          html = html.replace("Pergunta 1 de 10", "Pergunta 1 de 12")
+          html = html.replace("<span>/10</span>", "<span>/12</span>")
+          quiz_block = """const QUIZ_PERGUNTAS = [
+            { pergunta: 'Onde foi o primeiro encontro da Mari e do Pedro?',
+              opcoes: ['Num aniversário em São Paulo', 'Numa praia em Maceió', 'Num voo BSB → GRU', 'Num aplicativo de namoro'],
+              correta: 0 },
+            { pergunta: 'Quem falou "eu te amo" primeiro?',
+              opcoes: ['A Mari', 'O Pedro', 'Falaram juntos', 'Ninguém admite'],
+              correta: 1 },
+            { pergunta: 'Quem demora mais para se arrumar?',
+              opcoes: ['A Mari', 'O Pedro', 'Empate técnico', 'Depende da ocasião'],
+              correta: 0 },
+            { pergunta: 'Qual foi o maior desafio do namoro à distância?',
+              opcoes: ['Saudade', 'Preço da passagem', 'Agenda dos dois', 'Todas as anteriores'],
+              correta: 3 },
+            { pergunta: 'Quem chega em cima da hora no aeroporto pra viagem?',
+              opcoes: ['A Mari', 'O Pedro', 'Os dois', 'Ninguém, chegam cedo demais'],
+              correta: 2 },
+            { pergunta: 'Qual rota aérea marcou o namoro dos dois?',
+              opcoes: ['CGH ↔ BSB', 'GRU ↔ MCZ', 'CGH ↔ SDU', 'BSB ↔ REC'],
+              correta: 0 },
+            { pergunta: 'Quem tira mais e reclama das fotos?',
+              opcoes: ['A Mari', 'O Pedro', 'Os dois', 'Ninguém, só vivem o momento'],
+              correta: 0 },
+            { pergunta: 'Quem cozinha melhor?',
+              opcoes: ['A Mari', 'O Pedro', 'iFood', 'Os dois arrasam'],
+              correta: 2 },
+            { pergunta: 'Quem é mais organizado?',
+              opcoes: ['A Mari', 'O Pedro', 'Nenhum dos dois', 'Os dois são neuróticos por organização'],
+              correta: 2 },
+            { pergunta: 'Onde foi o pedido de casamento?',
+              opcoes: ['Na praia', 'Em casa, num jantar surpresa', 'Numa viagem', 'No lugar onde se conheceram'],
+              correta: 2 },
+            { pergunta: 'Quem escolheu Porto de Pedras para o casamento?',
+              opcoes: ['A Mari', 'O Pedro', 'Foi decisão dos dois', 'A cerimonialista'],
+              correta: 1 },
+            { pergunta: 'Quem vai dominar a pista de dança?',
+              opcoes: ['A Mari', 'O Pedro', 'Os padrinhos', 'Todo mundo depois do open bar'],
+              correta: 3 }
+          ];"""
+          html = re.sub(r"const QUIZ_PERGUNTAS = \[.*?\];", quiz_block, html, count=1, flags=re.S)
+          momentos.write_text(html, encoding="utf-8")
+
           index = dist / "index.html"
           html = index.read_text(encoding="utf-8")
 
