@@ -172,6 +172,14 @@ jobs:
           test -f dist/index.html
           test -f dist/favicon.svg
 
+      - name: Add destination map
+        run: |
+          cp -R destino/. dist/
+          python3 .github/scripts/add_destino.py
+          test -f dist/mapa-destino.js
+          test -f dist/data/weddingLocations.json
+          grep -q 'id="destino"' dist/index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
